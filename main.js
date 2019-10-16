@@ -1,65 +1,51 @@
 
-
-const vApp = createElement ('div', { style: { backgroundColor: 'red' } },{
-    attrs: {
-        id: 'app'
-    },
-        children:[createElement('img',
-            {
-                attrs: {
-                    src:'https://media.giphy.com/media/Ov5NiLVXT8JEc/giphy.gif',
-                },
-            }),
-
-        ],
-
-});
-
-
-function createElement(tagName, {attrs={}, children=[]}={}) {
-    return {
-        tagName,
-        attrs,
-        children,
-        };
-}
-
-function render(vNode) {
-    const $el = document.createElement(vNode.tagName);
-    for (const [k, v] of Object.entries(vNode.attrs)){
-        $el.setAttribute(k, v);
+function createElement(tagName, style, data) {
+    let element = document.createElement(tagName);
+    if (style !== undefined) {
+        element = React.createStyle(element, style);
     }
-    for (const child of vNode.children){
-        const $child = render(child);
-        $el.appendChild($child);
+
+    if (Array.isArray(data)) {
+        data.map((el) => element.append(el));
+    } else if (data !== undefined) {
+        element.textContent = data;
+      }
+    return element;
+}
+const createStyle = (element, style) => {
+        for (const [name, st] of Object.entries(style)) {
+            if (typeof st === 'object' && st !== null) {
+                for (const [k, v] of Object.entries(st)) {
+                    element[name][k] = v;
+                }
+            } else {
+                element[name] = st;
+            }
     }
-    return $el;
-}
-const $app = render(vApp);
 
- console.log($app);
+    return element;
+};
 
-function React($node, $target) {
-    $target.replaceWith($node);
-    return $node;
-}
-React($app, document.getElementById('app'));
+function render (value, element) {
+    element.append(value);
+};
 
-// const React = {
-//     createElement,
-//     render,
-// };
-//
-// const app = React.createElement(
-//     'div',
-//     { style: { backgroundColor: 'red' } },
-//     [
-//         React.createElement('span', undefined, 'Hello world'),
-//         React.createElement('br'),
-//         'This is just a text node',
-//         React.createElement('div', { textContent: 'Text content' }),
-//     ],
-// );
-// console.log(app);
-// React.render(app, document.getElementById('app'));
 
+const React = {
+    createElement,
+    createStyle,
+    render,
+};
+
+const app = React.createElement(
+    'div',
+    { style: { backgroundColor: 'red' } },
+    [
+        React.createElement('span', undefined, 'Hello world'),
+        React.createElement('br'),
+        'This is just a text node',
+        React.createElement('div', { textContent: 'Text content' }),
+    ],
+);
+console.log(app);
+React.render(app, document.getElementById('app'));
